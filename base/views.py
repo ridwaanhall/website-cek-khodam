@@ -47,7 +47,7 @@ def cek_khodam(request):
                     'name': None,
                     'khodam': None
                 },
-                'current_time': current_time
+                'current_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
             }
             # Save to database
             log_entry = ResponseLog(
@@ -70,7 +70,7 @@ def cek_khodam(request):
             'name': None,
             'khodam': None
         },
-        'current_time': current_time
+        'current_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
     }
     # Save to database
     log_entry = ResponseLog(
