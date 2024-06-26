@@ -13,7 +13,7 @@
                     <h4 class="mb-1">Cek Khodam Kamu</h4>
                     <p class="mb-4">Masukkan namamu dan lihat siapa khodammu</p>
 
-                    <form id="formAuthentication" class="mb-3">
+                    <form id="khodamForm" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-4">
                             <label for="name" class="form-label">Name</label>
@@ -40,7 +40,7 @@
                                             </tr>
                                             <tr>
                                                 <th scope="row">Khodam</th>
-                                                <td scope="row" id="modalResponse"></td>
+                                                <td scope="row" id="modalKhodam"></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -86,26 +86,26 @@
         var name = $('#name').val();
         $.ajax({
             type: 'POST',
-            url: "{% url 'input' %}",
+            url: "{% url 'cek-khodam' %}",
             data: {
-                'name-username': name,
+                'name': name,
                 'csrfmiddlewaretoken': $('[name=csrfmiddlewaretoken]').val()
             },
             success: function(response) {
-                $('#modalName').text(response.name);
-                $('#modalResponse').text(response.response);
+                $('#modalName').text(response.data.name);
+                $('#modalKhodam').text(response.data.khodam);
                 $('#modalCenter').modal('show');
             },
             error: function(xhr, errmsg, err) {
                 $('#modalName').text('Error');
-                $('#modalResponse').text('There was an error processing your request.');
+                $('#modalKhodam').text('There was an error processing your request.');
                 $('#modalCenter').modal('show');
             }
         });
     }
     
     $(document).ready(function() {
-        $('#formAuthentication').on('submit', function(event) {
+        $('#khodamForm').on('submit', function(event) {
             event.preventDefault();
             submitForm();
         });
