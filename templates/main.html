@@ -40,6 +40,9 @@
     {% block content %}
     {% endblock %}
 
+    {% block scripts %}
+    {% endblock %}
+
     <script src="{% static 'vendor/libs/jquery/jquery.js' %}"></script>
     <script src="{% static 'vendor/libs/popper/popper.js' %}"></script>
     <script src="{% static 'vendor/js/bootstrap.js' %}"></script>
@@ -57,5 +60,6 @@
     <script src="{% static 'js/main.js' %}"></script>
 
     <script src="{% static 'js/pages-auth.js' %}"></script>
+
 </body>
 </html>
