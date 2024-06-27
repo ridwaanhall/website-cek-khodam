@@ -1,4 +1,5 @@
 db.sqlite3
 vnev/
 __pycache__
-static/
+# static/
+static-archive/
