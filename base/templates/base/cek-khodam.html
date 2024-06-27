@@ -11,12 +11,12 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="mb-1">Cek Khodam Kamu</h4>
-                    <p class="mb-4">Masukkan namamu dan lihat siapa khodammu</p>
+                    <p class="mb-4">Masukkan namamu dan apa khodammu</p>
 
                     <form id="khodamForm" class="mb-3">
                         {% csrf_token %}
                         <div class="mb-4">
-                            <label for="name" class="form-label">Name</label>
+                            <label for="name" class="form-label">Nama Kamu</label>
                             <input type="text" class="form-control" id="name" name="name" placeholder="Siapa nama kamu??" autofocus />
                         </div>
                         <div class="mb-3">
@@ -25,7 +25,7 @@
                     </form>
 
                     <p class="text-center">
-                        <span id="responseLogCount">{{ count }} Orang telah mengecek khodam mereka.</span>
+                        <span id="responseLogCount">{{ count }} Orang udah cek Khodam, masa kamu ngga ngecek sih.</span>
                     </p>
 
                     <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
@@ -92,7 +92,7 @@
             method: "GET",
             success: function(response) {
                 if (response.code === 200) {
-                    $('#responseLogCount').text(response.data.count + ' Orang telah mengecek khodam mereka.');
+                    $('#responseLogCount').text(response.data.count + ' Orang udah cek Khodam, masa kamu ngga ngecek sih.');
                 } else {
                     $('#responseLogCount').text('Failed to retrieve response log count.');
                 }
