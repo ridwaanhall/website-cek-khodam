@@ -5,7 +5,11 @@ import random
 from django.utils import timezone
 
 def home(request):
-    return render(request, 'base/cek-khodam.html')
+    count = ResponseLog.objects.count()
+    context = {
+        'count': count
+    }
+    return render(request, 'base/cek-khodam.html', context)
 
 def cek_khodam(request):
     if request.method == 'POST':
@@ -84,3 +88,53 @@ def cek_khodam(request):
     log_entry.save()
 
     return JsonResponse(response_data, status=400)
+
+
+def count_response_logs(request):
+    if request.method == 'GET':
+        try:
+            count = ResponseLog.objects.count()
+            if count == 0:
+                response_data = {
+                    'code': 404,
+                    'status': 'Error',
+                    'message': 'No response logs found',
+                    'data': {
+                        'count': count
+                    },
+                    'current_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+                }
+                return JsonResponse(response_data, status=404)
+            else:
+                response_data = {
+                    'code': 200,
+                    'status': 'Success',
+                    'message': 'Successfully retrieved response log count',
+                    'data': {
+                        'count': count
+                    },
+                    'current_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+                }
+                return JsonResponse(response_data, status=200)
+        except Exception as e:
+            response_data = {
+                'code': 500,
+                'status': 'Error',
+                'message': f'Internal server error: {str(e)}',
+                'data': {
+                    'count': None
+                },
+                'current_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+            return JsonResponse(response_data, status=500)
+    else:
+        response_data = {
+            'code': 400,
+            'status': 'Error',
+            'message': 'Invalid request method',
+            'data': {
+                'count': None
+            },
+            'current_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        return JsonResponse(response_data, status=400)

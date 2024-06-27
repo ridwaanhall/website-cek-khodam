@@ -17,12 +17,16 @@
                         {% csrf_token %}
                         <div class="mb-4">
                             <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" name="email-username" placeholder="Siapa nama kamu??" autofocus />
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Siapa nama kamu??" autofocus />
                         </div>
                         <div class="mb-3">
                             <button class="btn btn-primary d-grid w-100" type="button" data-bs-toggle="modal" data-bs-target="#modalCenter" onclick="submitForm()">Cek Khodam</button>
                         </div>
                     </form>
+
+                    <p class="text-center">
+                        <span id="responseLogCount">{{ count }} Orang telah mengecek khodam mereka.</span>
+                    </p>
 
                     <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-md">
@@ -82,6 +86,23 @@
 <script src="{% static 'js/ui-modals.js' %}"></script>
 
 <script>
+    function fetchResponseLogCount() {
+        $.ajax({
+            url: "{% url 'count-rl' %}",
+            method: "GET",
+            success: function(response) {
+                if (response.code === 200) {
+                    $('#responseLogCount').text(response.data.count + ' Orang telah mengecek khodam mereka.');
+                } else {
+                    $('#responseLogCount').text('Failed to retrieve response log count.');
+                }
+            },
+            error: function() {
+                $('#responseLogCount').text('Error fetching response log count.');
+            }
+        });
+    }
+
     function submitForm() {
         var name = $('#name').val();
         $.ajax({
@@ -95,6 +116,7 @@
                 $('#modalName').text(response.data.name);
                 $('#modalKhodam').text(response.data.khodam);
                 $('#modalCenter').modal('show');
+                fetchResponseLogCount(); // Update the count after successful check
             },
             error: function(xhr, errmsg, err) {
                 $('#modalName').text('Error');
@@ -103,8 +125,11 @@
             }
         });
     }
-    
+
     $(document).ready(function() {
+        fetchResponseLogCount();
+        setInterval(fetchResponseLogCount, 5000);
+
         $('#khodamForm').on('submit', function(event) {
             event.preventDefault();
             submitForm();
