@@ -2,4 +2,4 @@
 
 ## next steps
 
-add count whose try this cek khodam
+add count who try this cek khodam auto update every 5 seconds.
