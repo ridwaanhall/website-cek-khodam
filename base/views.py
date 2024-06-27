@@ -12,82 +12,108 @@ def home(request):
     return render(request, 'base/cek-khodam.html', context)
 
 def cek_khodam(request):
-    if request.method == 'POST':
-        name = request.POST.get('name', '')
+    try:
+        if request.method == 'POST':
+            name = request.POST.get('name', '')
+            
+            khodams = list(ListKhodam.objects.values_list('nama_khodam', flat=True))
+            
+            if khodams:
+                khodam = random.choice(khodams)
+                current_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+                response_data = {
+                    'code': 200,
+                    'status': 'Success',
+                    'message': 'Successfully retrieved data',
+                    'data': {
+                        'name': name,
+                        'khodam': khodam
+                    },
+                    'current_time': current_time
+                }
+
+                log_entry = ResponseLog(
+                    code=response_data['code'],
+                    status=response_data['status'],
+                    message=response_data['message'],
+                    name=response_data['data']['name'],
+                    khodam=response_data['data']['khodam'],
+                    current_time=response_data['current_time']
+                )
+                log_entry.save()
+
+                return JsonResponse(response_data)
+            else:
+                response_data = {
+                    'code': 404,
+                    'status': 'Error',
+                    'message': 'No data available',
+                    'data': {
+                        'name': None,
+                        'khodam': None
+                    },
+                    'current_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+                }
+
+                log_entry = ResponseLog(
+                    code=response_data['code'],
+                    status=response_data['status'],
+                    message=response_data['message'],
+                    name=response_data['data']['name'],
+                    khodam=response_data['data']['khodam'],
+                    current_time=response_data['current_time']
+                )
+                log_entry.save()
+
+                return JsonResponse(response_data, status=404)
         
-        khodams = list(ListKhodam.objects.values_list('nama_khodam', flat=True))
-        
-        if khodams:
-            khodam = random.choice(khodams)
-            current_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
-            response_data = {
-                'code': 200,
-                'status': 'Success',
-                'message': 'Successfully retrieved khodam data',
-                'data': {
-                    'name': name,
-                    'khodam': khodam
-                },
-                'current_time': current_time
-            }
+        response_data = {
+            'code': 400,
+            'status': 'Error',
+            'message': 'Invalid request',
+            'data': {
+                'name': None,
+                'khodam': None
+            },
+            'current_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
 
-            log_entry = ResponseLog(
-                code=response_data['code'],
-                status=response_data['status'],
-                message=response_data['message'],
-                name=response_data['data']['name'],
-                khodam=response_data['data']['khodam'],
-                current_time=response_data['current_time']
-            )
-            log_entry.save()
+        log_entry = ResponseLog(
+            code=response_data['code'],
+            status=response_data['status'],
+            message=response_data['message'],
+            name=response_data['data']['name'],
+            khodam=response_data['data']['khodam'],
+            current_time=response_data['current_time']
+        )
+        log_entry.save()
 
-            return JsonResponse(response_data)
-        else:
-            response_data = {
-                'code': 404,
-                'status': 'Error',
-                'message': 'No khodam data available',
-                'data': {
-                    'name': None,
-                    'khodam': None
-                },
-                'current_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
-            }
-
-            log_entry = ResponseLog(
-                code=response_data['code'],
-                status=response_data['status'],
-                message=response_data['message'],
-                name=response_data['data']['name'],
-                khodam=response_data['data']['khodam'],
-                current_time=response_data['current_time']
-            )
-            log_entry.save()
-
-            return JsonResponse(response_data, status=404)
+        return JsonResponse(response_data, status=400)
     
-    response_data = {
-        'code': 400,
-        'status': 'Error',
-        'message': 'Invalid request',
-        'data': {
-            'name': None,
-            'khodam': None
-        },
-        'current_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
-    }
+    except Exception as e:
+        error_message = f"Internal Server Error: {str(e)}"
+        log_entry = ResponseLog(
+            code=500,
+            status='Error',
+            message=error_message,
+            name=None,
+            khodam=None,
+            current_time=timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+        )
+        log_entry.save()
 
-    log_entry = ResponseLog(
-        code=response_data['code'],
-        status=response_data['status'],
-        message=response_data['message'],
-        name=response_data['data']['name'],
-        khodam=response_data['data']['khodam'],
-        current_time=response_data['current_time']
-    )
-    log_entry.save()
-
-    return JsonResponse(response_data, status=400)
+        response_data = {
+            'code': 500,
+            'status': 'Error',
+            'message': error_message,
+            'data': {
+                'name': None,
+                'khodam': None
+            },
+            'current_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+        return JsonResponse(response_data, status=500)
 
 
 def count_response_logs(request):
